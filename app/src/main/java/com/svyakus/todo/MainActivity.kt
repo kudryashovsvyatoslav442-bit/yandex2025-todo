@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.jakewharton.threetenabp.AndroidThreeTen
+import com.svyakus.todo.screen_list.NotesListScreen
 import com.svyakus.todo.ui.theme.TodoYandexTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,28 +24,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             TodoYandexTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    NotesListScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TodoYandexTheme {
-        Greeting("Android")
     }
 }

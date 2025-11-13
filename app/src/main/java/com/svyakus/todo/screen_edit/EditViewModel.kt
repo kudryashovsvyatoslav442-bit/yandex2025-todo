@@ -6,15 +6,23 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.svyakus.todo.data.TodoRepository
 import com.svyakus.todo.model.Importance
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 sealed interface EditIntent {
     data class ChangeText(val v: TextFieldValue) : EditIntent
+    data class LoadTodo(val uid: String) : EditIntent
     data class ChangeDone(val checked: Boolean) : EditIntent
     data class ChangeImportance(val imp: Importance) : EditIntent
     object ShowDate : EditIntent
+    object AddTodo : EditIntent
+    data class EditTodo(val uid: String) : EditIntent
     object HideDate : EditIntent
     data class PickDate(val millis: Long?) : EditIntent
     data class PickPresetColor(val color: Color) : EditIntent
@@ -24,11 +32,11 @@ sealed interface EditIntent {
     object ConfirmCustom : EditIntent
 }
 
-class EditViewModel(
-    private val savedStateHandle: SavedStateHandle
+@HiltViewModel
+class EditViewModel @Inject constructor(
+    private val repository: TodoRepository
 ) : ViewModel() {
-    private val KEY = "EditUiState"
-    private val _ui = MutableStateFlow(savedStateHandle.get<EditUiState>(KEY) ?: EditUiState())
+    private val _ui = MutableStateFlow(EditUiState())
     val state: StateFlow<EditUiState> = _ui
 
     fun dispatch(intent: EditIntent) {
@@ -55,11 +63,28 @@ class EditViewModel(
             is EditIntent.OpenColorChooser -> _ui.value = s.copy(showColorChooser = true)
             is EditIntent.HideColorChooser -> _ui.value = s.copy(showColorChooser = false)
             is EditIntent.ConfirmCustom -> _ui.value = s.copy(custom = true, showColorChooser = false)
+            is EditIntent.AddTodo -> {
+                viewModelScope.launch {
+                    val todo = state.value.toTodoItem()
+                    repository.add(todo)
+                }
+            }
+            is EditIntent.EditTodo -> {
+                viewModelScope.launch {
+                    val todo = state.value.toTodoItem(existingUid = intent.uid)
+                    repository.update(todo)
+                }
+            }
+            is EditIntent.LoadTodo -> {
+                viewModelScope.launch {
+                    val loaded = repository.getById(intent.uid)
+                    if (loaded != null) {
+                        _ui.value = loaded.toEditUiState()
+                    } else {
+                        _ui.value = EditUiState()
+                    }
+                }
+            }
         }
-    }
-
-    override fun onCleared() {
-        savedStateHandle[KEY] = _ui.value
-        super.onCleared()
     }
 }

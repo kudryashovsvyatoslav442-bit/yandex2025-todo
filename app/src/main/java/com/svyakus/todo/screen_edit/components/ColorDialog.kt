@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
+import com.svyakus.todo.screen_edit.components.AnimatedColorPickerWrapper
 import com.svyakus.todo.screen_edit.components.HueSVPicker
 
 @Composable
@@ -25,25 +26,31 @@ fun ColorDialog(
     onDone: () -> Unit
 ) {
     if (!show) return
-    Dialog(onDismissRequest = onDismiss) {
-        AnimatedVisibility(
-            visible = true,
-            enter = fadeIn() + scaleIn(initialScale = 0.85f),
-            exit = fadeOut() + scaleOut(targetScale = 0.9f)
-        ) {
-            Surface(
-                tonalElevation = 8.dp
-            ) {
-                Column(
-                    modifier = androidx.compose.ui.Modifier.padding(18.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    HueSVPicker(h = h, s = s_, v = v, onPick = onHSV)
-                    Row {
-                        TextButton(onDismiss) { androidx.compose.material3.Text("Cancel") }
-                        TextButton(onDone) { androidx.compose.material3.Text("Done") }
+    AnimatedColorPickerWrapper(
+        show = show,
+        content = {
+            Dialog(onDismissRequest = onDismiss) {
+                AnimatedVisibility(
+                    visible = true,
+                    enter = fadeIn() + scaleIn(initialScale = 0.85f),
+                    exit = fadeOut() + scaleOut(targetScale = 0.9f)
+                ) {
+                    Surface(
+                        tonalElevation = 8.dp
+                    ) {
+                        Column(
+                            modifier = androidx.compose.ui.Modifier.padding(18.dp),
+                            verticalArrangement = Arrangement.spacedBy(14.dp)
+                        ) {
+                            HueSVPicker(h = h, s = s_, v = v, onPick = onHSV)
+                            Row {
+                                TextButton(onDismiss) { androidx.compose.material3.Text("Cancel") }
+                                TextButton(onDone) { androidx.compose.material3.Text("Done") }
+                            }
+                        }
                     }
                 }
             }
         }
-    }
+    )
 }

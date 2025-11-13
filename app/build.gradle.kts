@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.svyakus.todo"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.svyakus.todo"
@@ -56,11 +56,12 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation("org.slf4j:slf4j-api:1.7.36")
     implementation("com.github.tony19:logback-android:3.0.0")
 
-     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
+    // debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
 
     // threetenabp - для решения проблемы совместимости с LocalDateTime (которая requires API level 26)
     implementation(libs.threetenabp)

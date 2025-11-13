@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory
 import java.io.File
 
 class FileStorage(context: Context) {
-    private val file = File(context.filesDir, "todo_items.json")
     private val log = LoggerFactory.getLogger(FileStorage::class.java)
+    private val file = File(context.filesDir, "todo_items.json")
     private val _items: MutableList<TodoItem> = mutableListOf()
 
     val items: List<TodoItem>

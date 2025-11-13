@@ -12,7 +12,6 @@ data class TodoItem(
     val deadline: LocalDateTime? = null,
     val isDone: Boolean = false
 ) {
-    // истекло - если один день после дедлайна
     val isExpired: Boolean
         get() = deadline?.isBefore(LocalDateTime.now().minusDays(1)) ?: false
 }
